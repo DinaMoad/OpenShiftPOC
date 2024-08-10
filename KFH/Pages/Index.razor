@@ -1,0 +1,113 @@
+﻿@page "/"
+
+@using KFH.Services;
+@using KFH.Models;
+@inject ICustomerService _customerService;
+<PageTitle>Index</PageTitle>
+
+<h1>KFH!</h1>
+
+
+
+@if (numberOfCustomers > 0)
+{
+
+    <table>
+        <tr><td> <h4>ID</h4></td><td> <h4>Name</h4></td><td> <h4>Email</h4></td> <td> <h4>Status</h4></td></tr>
+    @foreach (var item in customers)
+    {
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.Name</td>
+
+            <td>@item.Email</td>
+            <td>@item.Status</td>
+
+        </tr>
+
+    }
+
+    </table>
+}
+else
+{
+    <h3>there is no Customers</h3>
+
+}
+
+
+
+
+
+<h1>Get Customer Data</h1>
+
+<EditForm Model="@customer" OnValidSubmit="@HandelSubmit">
+
+    <label  for="ProdcutName"> Customer Name</label>
+
+    <InputText id="ProdcutName" @bind-Value="@customer.Name"></InputText>
+    
+
+
+        <button type="submit" class="btn-primary">Get CustomerData</button>
+
+
+</EditForm>
+
+
+@if(string.IsNullOrEmpty(Balance))
+{
+    <h3>0</h3>
+}
+@if(string.IsNullOrEmpty(Balance))
+{
+    <h3>@Balance</h3>
+}
+
+<h1>Get Customer Balance</h1>
+
+<EditForm Model="@customer" OnValidSubmit="@GetBalance">
+
+    <label  for="Id"> Customer ID</label>
+
+    <InputNumber id="Id" @bind-Value="@customer.Id"></InputNumber>
+   
+
+        <button type="submit" class="btn-primary">Get Balance</button>
+
+
+</EditForm>
+
+@code
+{
+    String Balance = null;
+    CustomerModel customer = new CustomerModel();
+    IEnumerable<CustomerModel> customers = new List<CustomerModel>();
+    int numberOfCustomers = 0;
+    protected override async Task OnInitializedAsync()
+    {
+    //    customers = await _customerService.GetCustomers();
+
+        //numberOfCustomers = customers.Count;
+
+    }
+
+
+    public async void HandelSubmit(EditContext editContext)
+    {
+        var customer = (CustomerModel)editContext.Model;
+        customer = await _customerService.GetCustomerByName(customer.Name);
+
+
+
+    }
+
+    public async void GetBalance(EditContext editContext)
+    {
+        var customer = (CustomerModel)editContext.Model;
+         Balance = await _customerService.GetCustomerBalance(customer.Id);
+
+    }
+    }
+
+<!--<SurveyPrompt Title="How is Blazor working for you?" />-->
